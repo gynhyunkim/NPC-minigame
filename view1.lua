@@ -9,34 +9,92 @@ local scene = composer.newScene()
 
 function scene:create( event )
 	local sceneGroup = self.view
+	local cX, cY = display.contentWidth * 0.5 , display.contentHeight * 0.5
 	
-	-- Called when the scene's view does not exist.
-	-- 
-	-- INSERT code here to initialize the scene
-	-- e.g. add display objects to 'sceneGroup', add touch listeners, etc.
-	
-	-- create a white background to fill screen
-	local background = display.newRect( display.contentCenterX, display.contentCenterY, display.contentWidth, display.contentHeight )
-	background:setFillColor( 1 )	-- white
-	
-	-- create some text
-	local title = display.newText( "First View", display.contentCenterX, 125, native.systemFont, 32 )
-	title:setFillColor( 0 )	-- black
-	
-	local newTextParams = { text = "Loaded by the first tab's\n\"onPress\" listener\nspecified in the 'tabButtons' table", 
-						x = display.contentCenterX + 10, 
-						y = title.y + 215, 
-						width = 310, height = 310, 
-						font = native.systemFont, fontSize = 14, 
-						align = "center" }
-	local summary = display.newText( newTextParams )
-	summary:setFillColor( 0 ) -- black
+	local cardImage = {"image/1.png", "image/2.png", "image/3.png", "image/4.png", "image/5.png"}
+	local cardNum = {4, 4, 4, 4, 4}
+	local card = {}
+	local back = {}
+
+	-- 배치할 카드 고르는 함수
+	local function pick()
+		local i = -1
+		while i == -1 do
+			i = math.random(1, 5)
+			if cardNum[i] > 0 then
+				cardNum[i] = cardNum[i] - 1
+				return i
+			end
+			i = -1
+		end
+		return -2
+	end
+
+	local selected = -1
+
+	-- 터치 이벤트 구현
+	local function select( event )
+		local obj = event.target
+		local idx = obj.name
+		
+		card[idx].alpha = 1
+		if (selected ~= -1) then
+			if (selected ~= idx and card[selected].name == card[idx].name) then
+				print(equal)
+				transition.to(card[selected], {delay = 400, alpha = 0, time = 30})
+				transition.to(card[idx], {delay = 400, alpha = 0, time = 30})
+				transition.to(obj, {delay = 400, alpha = 0, time = 0})
+				transition.to(back[selected], {delay = 400, alpha = 0, time = 0})
+				selected = -1
+			elseif (selected ~= idx) then
+				transition.to(card[selected], {delay = 400, alpha = 0, time = 30})
+				transition.to(card[idx], {delay = 400, alpha = 0, time = 30})
+				selected = -1
+			end
+		else
+			selected = idx
+		end
+		print(obj.name)
+		return true
+	end
+
+	-- 카드 앞면, 뒷면 배치
+	local backGroup = display.newGroup()
+	local cardGroup = display.newGroup()
+	local newX, newY = cX - 155, cY - 255
+	for i = 1, 20 do
+		local n = pick()
+		card[i] = display.newImage(cardImage[n])
+		card[i].name = n
+		print(card[i].name)
+		card[i].x, card[i].y = newX, newY
+		back[i] = display.newRect(backGroup, newX, newY, 75, 125)
+		back[i].name = i
+		back[i]:addEventListener("tap", select)
+		transition.to(card[i], {time = 0, xScale = 0.5, yScale = 0.5})
+		newX = newX + 80
+		if i % 5 == 0 then
+			newX = cX - 155
+			newY = newY + 130
+		end
+		cardGroup:insert(card[i])
+	end
+
+	sceneGroup:insert(backGroup)
+	sceneGroup:insert(cardGroup)
 
 	
-	-- all objects must be added to group (e.g. self.view)
-	sceneGroup:insert( background )
-	sceneGroup:insert( title )
-	sceneGroup:insert( summary )
+	-- 1.5초 후에 카드 숨기기
+	local function onTimer( event )
+		for i = 1, #card do
+			card[i].alpha = 0
+		end
+ 	end
+
+	timer.performWithDelay(1500, onTimer)
+
+	
+	
 end
 
 function scene:show( event )
