@@ -16,6 +16,10 @@ function scene:create( event )
 	local card = {}
 	local back = {}
 
+	local bg = display.newRect(cX, cY, 1280, 720)
+	bg:setFillColor(0)
+	sceneGroup:insert(bg)
+
 	-- 배치할 카드 고르는 함수
 	local function pick()
 		local i = -1
@@ -64,12 +68,12 @@ function scene:create( event )
 	local newX, newY = cX - 155, cY - 255
 	for i = 1, 20 do
 		local n = pick()
-		card[i] = display.newImage(cardImage[n])
+		card[i] = display.newImage(cardGroup, cardImage[n])
 		card[i].name = n
-		print(card[i].name)
 		card[i].x, card[i].y = newX, newY
-		back[i] = display.newRect(backGroup, newX, newY, 75, 125)
+		back[i] = display.newImageRect(backGroup,"image/cover.png", 75, 125)
 		back[i].name = i
+		back[i].x, back[i].y = newX, newY
 		back[i]:addEventListener("tap", select)
 		transition.to(card[i], {time = 0, xScale = 0.5, yScale = 0.5})
 		newX = newX + 80
