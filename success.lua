@@ -1,8 +1,3 @@
------------------------------------------------------------------------------------------
---
--- view2.lua
---
------------------------------------------------------------------------------------------
 
 local composer = require( "composer" )
 local scene = composer.newScene()
@@ -10,24 +5,15 @@ local scene = composer.newScene()
 function scene:create( event )
 	local sceneGroup = self.view
 	local cX, cY = display.contentWidth * 0.5 , display.contentHeight * 0.5
-
+	
 	local bg = display.newRect(cX, cY, 1280, 720)
 	bg:setFillColor(1)
 	sceneGroup:insert(bg)
 
-	local game_name = display.newText("같은 그림 찾기", cX, cY * 0.9, native.systemFont, 64)
+	local game_name = display.newText("성공!!", cX, cY, native.systemFont, 64)
 	game_name:setFillColor(0)
 	sceneGroup:insert(game_name)
-
-	local start = display.newText("게임 시작", cX, cY * 1.05, native.systemFont, 40);
-	start:setFillColor(0.1)
-	sceneGroup:insert(start) 
-
-	local function game_start( event )
-		composer.gotoScene("view1")
-	end
-
-	start:addEventListener("tap", game_start)
+	
 end
 
 function scene:show( event )

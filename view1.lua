@@ -17,7 +17,7 @@ function scene:create( event )
 	local back = {}
 
 	local bg = display.newRect(cX, cY, 1280, 720)
-	bg:setFillColor(0)
+	bg:setFillColor(1)
 	sceneGroup:insert(bg)
 
 	-- 배치할 카드 고르는 함수
@@ -35,6 +35,7 @@ function scene:create( event )
 	end
 
 	local selected = -1
+	local cnt = 0
 
 	-- 터치 이벤트 구현
 	local function select( event )
@@ -50,6 +51,10 @@ function scene:create( event )
 				transition.to(obj, {delay = 400, alpha = 0, time = 0})
 				transition.to(back[selected], {delay = 400, alpha = 0, time = 0})
 				selected = -1
+				cnt = cnt + 1
+				if (cnt == 10) then
+					composer.gotoScene("success", {effect = "fade", time = 500})
+				end
 			elseif (selected ~= idx) then
 				transition.to(card[selected], {delay = 400, alpha = 0, time = 30})
 				transition.to(card[idx], {delay = 400, alpha = 0, time = 30})
@@ -95,9 +100,33 @@ function scene:create( event )
 		end
  	end
 
+
 	timer.performWithDelay(1500, onTimer)
 
+	local function setTimer()
+		local time = 30
+
+		local text_num = display.newText(
+		{	text = "남은 시간 : "..tostring(time),
+			x = 1150,
+			y = 50,
+			font = "fonts/SeoulNamsanB.ttf",
+			fontSize = 25 })
+		text_num:setFillColor(0)
+		sceneGroup:insert(text_num)
+
+		local function gameTimer()
+			time = time - 1
+			if (time == 0) then	
+				composer.gotoScene("fail", {effect = "fade", time = 500})
+			end
+			text_num.text = "남은 시간 : "..tostring(time)
+		end
 	
+		gt = timer.performWithDelay(1000, gameTimer, -1)
+	end
+	
+	timer.performWithDelay(1500, setTimer)
 	
 end
 
@@ -126,6 +155,7 @@ function scene:hide( event )
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
 	elseif phase == "did" then
 		-- Called when the scene is now off screen
+		composer.removeScene("view1")
 	end
 end
 
