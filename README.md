@@ -3,7 +3,8 @@
 플레이 화면
 
 # 개발 환경
-Lua & Solar2D
+- Lua
+- Solar2D
 
 # 플레이 방법
 Corona Simulator에서 main.lua 실행
